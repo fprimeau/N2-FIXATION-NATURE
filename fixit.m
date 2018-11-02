@@ -3,8 +3,11 @@ Nc = parm.Nc;
 iwet = find(parm.M3d(:));
 n_wet = length(iwet);
 DIN = N(1:n_wet);
+
 T = tanh(DIN-parm.Nc);
-R = 0.5+0.5*T;
+R = 0.5+0.5*T;         % corresponding to Eq. 6 
+
+% calculate first and second derivatives;
 if(nargout>1)
     dTdDIN = 1-T.^2;
     Rn = 0.5*dTdDIN;
