@@ -1,4 +1,15 @@
 function [f,fx,fxx] = neglogpost(x,parm)
+%
+% [f,fx,fxx] = neglogpost(x,parm);
+% 
+% output:
+% f:   -log(prob(x|data))
+% fx:  1st derivative of f w.r.t. x
+% fxx: 2nd derivative of f w.r.t. x 
+%
+% input:
+% x:   model parameters
+% parm: non-optimizable parameters and data that are needed to set up the model
 tic
 M3d  = parm.M3d;
 iwet = find(M3d(:));
@@ -12,7 +23,7 @@ scale = parm.DON_scale;
 fprintf('DON scale is %2.2f, \n', scale)
 fprintf('SDN scale is %2.2f, \n', parm.SDN_scale)
 
-%%%%%%% check if the optimization routin gives strange parameter values
+%%%%%%% check if the optimization routine gives strange parameter values
 xii_new = [exp(x(1:end-1));x(end)];
 load tmp_xhat_preind.mat
 xii_old = xhat;
@@ -47,15 +58,15 @@ fprintf('\n');
 xhat = xii_new;
 save('tmp_xhat_preind','xhat')
 x = [log(xii_new(1:end-1));xii_new(end)];
-%%%%%%% restore it back to old value %%%%%%%%%%%%%.
+%%%%%%% reject the new parameter values and use the old ones instead %%%%%%%%%%%%%.
 
-ipo4 = find(~isnan(po4raw(iwet))); % index for valid DIP measurements;
-ino3 = find(~isnan(no3raw(iwet))); % index for valid DIN measurements;
-idon = find(DONobs(iwet)>0);       % index for valid DON measurements;
+ipo4 = find(~isnan(po4raw(iwet))); % index for valid DIP measurements
+ino3 = find(~isnan(no3raw(iwet))); % index for valid DIN measurements
+idon = find(DONobs(iwet)>0);       % index for valid DON measurements
 
-n_po4 = length(ipo4); % number of valid PO4 obs.;
-n_no3 = length(ino3); % number of valid NO3 obs.;
-n_don = length(idon); % number of valid DON obs.;
+n_po4 = length(ipo4); % number of valid PO4 obs.
+n_no3 = length(ino3); % number of valid NO3 obs.
+n_don = length(idon); % number of valid DON obs.
 
 % extract valide data;
 NO3   = no3raw(iwet(ino3)); 
@@ -70,11 +81,13 @@ DON = M3d+nan;
 % get P model only parameters;
 xp = x(1:4);
 ip = [1,3,4,5];
-[P,Px,Pxx,parm] = eqPcycle(parm,ip,xp); % P cycle model;
+% solve the steady-state equilibrium P-cycle model
+[P,Px,Pxx,parm] = eqPcycle(parm,ip,xp); 
 parm.P = P;     % vector for P field 
 parm.Px = Px;   % first derivatives;
 parm.Pxx = Pxx; % second derivatives;
 
+% reshape vector state variables into 3d fields
 DIP = M3d+nan;  DIP(iwet) = P(1:nwet);
 POP = M3d+nan;  POP(iwet) = P(1+nwet:2*nwet);
 DOP = M3d+nan;  DOP(iwet) = P(1+2*nwet:end);
@@ -83,8 +96,9 @@ parm.DIP = DIP(iwet); parm.POP = POP(iwet); parm.DOP = DOP(iwet);
 % get N model parameters;
 xn = x;
 in = 1:length(x);
+% solve the steady-state N-cycle model
 [N,Nx,Nxx,parm] = eqNcycle_v2(parm,in,xn);
-
+% reshape vector state variables into 3d fields
 DIN = M3d+nan;  DIN(iwet) = N(1:nwet);
 PON = M3d+nan;  PON(iwet) = N(1+nwet:2*nwet);
 DON = M3d+nan;  DON(iwet) = N(1+2*nwet:end);

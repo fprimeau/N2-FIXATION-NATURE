@@ -6,14 +6,14 @@ load transport_v4.mat
 load envi_data.mat no3obs po4obs o2obs npp % environmental data
 
 % raw uninterpreted data used to constrain the model
-load constrain_data po4raw no3raw DONobs   
+load constraint_data po4raw no3raw DONobs   
 
 % 2D riverine and atmospheric sources based on Lamarque et al.,
 % 2010 and Seitzinger et al 2010.
 load external_sources.mat  
 
-% load N P fields for initial guess of Newton Method
-load initial_guess.mat DIN DON PON
+% load N P fields for initial iterate of Newton Method
+load initial_iterate.mat DIN DON PON
 grd   = grid;         % grid info. for OCIM model;
 iwet  = find(M3d(:)); % find index of wet grid box;
 nwet  = length(iwet); % number of wet grid boxes;
@@ -53,7 +53,7 @@ DIN_RIV_FLUX(isnan(DIN_RIV_FLUX))   = 0;
 DON_RIV_FLUX(isnan(DON_RIV_FLUX))   = 0;
 DONr_RIV_FLUX(isnan(DONr_RIV_FLUX)) = 0;
 
-% check and print total amount, where dVt is a 3D volume matrix;
+% check and print total amount, where dVt is a 3D gridbox volume matrix;
 tDIN_RIV_tmp = DIN_RIV_FLUX.*dVt(:,:,1);
 tDON_RIV_tmp = DON_RIV_FLUX.*dVt(:,:,1);
 tDONr_RIV_tmp = DONr_RIV_FLUX.*dVt(:,:,1);
@@ -170,17 +170,17 @@ parm.iN = 0.06; % parameter for Benthic denitrification (Bohlen et al.,2012);
 %%%%%%%%%%%%% end %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% parameters need to be optimized %%%%%%%
-bp       = 0.96;     % corresponding to b_P in table S1;
-kappa_dp = 0.94e-7;  % corresponding to kappa_dP in table S1;
-alpha    = 1.71e-2;  % corresponding to alpha in table S1;
-beta     = 0.57;     % corresponding to beta in table S1;
-kw       = 0.91e-9;  % corresponding to k_w in table S1;
-bn       = 0.80;     % corresponding to b_N in table S1;
-kappa_dn = 0.57e-7;  % corresponding to kappa_dN in table S1;
-cc       = 20.64;    % corresponding to Delta in table S1;
-n2p_l    = 12.41;    % corresponding to A in table S1;
-S        = 6.58;     % corresponding to B in table S1;
-Nc       = -1.23;     % corresponding to [DIN]_c in table S1;
+bp       = 0.96;     % corresponds to b_P in table S1;
+kappa_dp = 0.94e-7;  % corresponds to kappa_dP in table S1;
+alpha    = 1.71e-2;  % corresponds to alpha in table S1;
+beta     = 0.57;     % corresponds to beta in table S1;
+kw       = 0.91e-9;  % corresponds to k_w in table S1;
+bn       = 0.80;     % corresponds to b_N in table S1;
+kappa_dn = 0.57e-7;  % corresponds to kappa_dN in table S1;
+cc       = 20.64;    % corresponds to Delta in table S1;
+n2p_l    = 12.41;    % corresponds to A in table S1;
+S        = 6.58;     % corresponds to B in table S1;
+Nc       = -1.23;    % corresponds to [DIN]_c in table S1;
 %%%%%%%%%%%%% end %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % log transform parameters that have to be positive;
@@ -200,7 +200,7 @@ parm.nin = nin;
 parm.pos = pos;
 
 SDN_scale = 1.0; % scaling factor for sedimentary denitrification
-                 % corresponding to "s" in the paper.
+                 % corresponds to "s" in the paper.
 
 for jj = 1:length(SDN_scale)
     
