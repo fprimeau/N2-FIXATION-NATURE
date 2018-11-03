@@ -23,13 +23,14 @@ o2 = parm.o2(iwet);
 iB = parm.ib;
 sl = parm.sl;
 iN = parm.iN;
-iX = sl*exp(log(0.99)*(o2-DIN))+iN;
+iX = sl*exp(log(0.99)*(o2-DIN))+iN;  
 diXdDIN = -sl*exp(log(0.99)*(o2-DIN))*log(0.99);
 d2iXdDIN2 = sl*exp(log(0.99)*(o2-DIN))*log(0.99)^2;
 
-wcD = c2n*kw*io.*DON.*DIN;
-sdD = -c2n*(PFdiv_n*PON).*iB.*iX;
+wcD = c2n*kw*io.*DON.*DIN;     % corresponding to Eq. S3;
+sdD = -c2n*(PFdiv_n*PON).*iB.*iX; % based on Bohlen et al., (2012) (Eq.S5);
 
+% calculate first and second derivatives;
 if(nargout>2)
     nin = parm.nin;
     Z = sparse(n_wet,n_wet);
@@ -41,7 +42,7 @@ if(nargout>2)
     rhsDx(:,6) = -c2n*(parm.bn*dPFDdb*PON).*iB.*iX;
     %rhsDx(:,8) = c2n*kw*g1.*DON.*DIN;
     rhsDx(:,8) = c2n*kw*g2.*DON.*DIN;
-
+    
 end    
 if(nargout>4)
     DINx = Nx(1:n_wet,:);
