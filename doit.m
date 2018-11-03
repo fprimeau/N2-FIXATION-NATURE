@@ -188,13 +188,19 @@ x0 = [log([bp; kappa_dp; alpha; beta; kw; bn; ...
            kappa_dn; cc; n2p_l; S]); Nc];
 
 nip = length(x0); % number of optimized parameters;
+
 % order of second derivatives
-in = 1:nip;
+in = 1:nip; % parameter indices
 nin = length(in);
-n = (nin+1)*nin/2;
-pos = tril(ones(nin),0);
+n = (nin+1)*nin/2;       % number of unique 2nd derivatives
+                         
+% the pos matrix is an nip x nip array with numbers from
+% 1 to n in the upper triangular part. These numbers are used as
+% the column index in a big array whos columns store the 2nd
+% derivative of the model state with respect to the parameters
+pos = tril(ones(nin),0); 
 pos(pos==1) = 1:n;
-pos = pos';
+pos = pos'; 
 parm.in = in;
 parm.nin = nin;
 parm.pos = pos;

@@ -97,7 +97,7 @@ parm.DIP = DIP(iwet); parm.POP = POP(iwet); parm.DOP = DOP(iwet);
 xn = x;
 in = 1:length(x);
 % solve the steady-state N-cycle model
-[N,Nx,Nxx,parm] = eqNcycle_v2(parm,in,xn);
+[N,Nx,Nxx,parm] = eqNcycle(parm,in,xn);
 % reshape vector state variables into 3d fields
 DIN = M3d+nan;  DIN(iwet) = N(1:nwet);
 PON = M3d+nan;  PON(iwet) = N(1+nwet:2*nwet);
@@ -113,17 +113,24 @@ Wp = d0(dVt(iwet(ipo4))./(parm.DIPstd.^2*sum(dVt(iwet))));
 Wn = d0(dVt(iwet(ino3))./(parm.DINstd.^2*sum(dVt(iwet))));
 Wo = d0(dVt(iwet(idon))./(parm.DONstd.^2*sum(dVt(iwet))));
 Wo = Wo*scale;
-
+% 
 px = zeros(nwet,11);
 px(:,1:4) = Px(1:nwet,:);
 pos = parm.pos;
 pxx = zeros(nwet,pos(end,end));
-posP = [1 2 3 4; 0 5 6 7; 0 0 8 9; 0 0 0 10];
+posP = [1 2 3 4;...
+        0 5 6 7;...
+        0 0 8 9;...
+        0 0 0 10];
+% pxx is an array whose columns correspond to the 2nd derivatives
+% of the P-cycle model state with respect to the 4 P-cycle model
+% parameters that we want to optimize
 for i1 = 1:4
     for i2 = i1:4
         pxx(:,pos(i1,i2)) = Pxx(1:nwet,posP(i1,i2));
     end
 end
+
 Ox = Nx(2*nwet+1:end,:); Oxx = Nxx(2*nwet+1:end,:);
 P = DIP(iwet(ipo4)); px = px(ipo4,:); pxx = pxx(ipo4,:);
 N = DIN(iwet(ino3)); nx = Nx(ino3,:); nxx = Nxx(ino3,:);
@@ -142,7 +149,8 @@ if (nargout>1)
     fx = ep.'*Wp*px+en.'*Wn*nx + eo.'*Wo*ox;
 end
 
-% second derivatives towards parameters;
+% second derivatives of f with respect to the parameters 
+% computed using the chaine rule
 if (nargout>2)
     fxx = zeros(11,11);
     for i1 = 1:11
