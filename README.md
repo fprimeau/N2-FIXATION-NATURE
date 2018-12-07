@@ -48,3 +48,6 @@ mfactor.m Timothy A. Davis' LINFACTOR VERSION 1.1.0, Nov 1, 2007
 	  
 d0.m      makes a sparse diagonal matrix given a 3d field
 	
+data needed to drive the model:
+
+The tracer transport operators and binned WOA13 and/or GLODAP data sets used for the optimization are available from (fprimeau@uci.edu).
