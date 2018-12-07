@@ -24,6 +24,13 @@ fprintf('DON scale is %2.2f, \n', scale)
 fprintf('SDN scale is %2.2f, \n', parm.SDN_scale)
 
 %%%%%%% check if the optimization routine gives strange parameter values
+% the purpose for doing this is that the optimization routine is
+% prone to assign strange parameter values during the second
+% iteration, which may make Newton method not converge . We need to
+% arbitrarily add a "large bounds"  to the parameters. Here we  use
+% 5 (1/5), which can be changed  to larger numbers if the confidence
+% on the parameter values is low. 
+
 xii_new = [exp(x(1:end-1));x(end)];
 load tmp_xhat_preind.mat
 xii_old = xhat;
@@ -37,7 +44,7 @@ for ii = 1:length(tmp)
     xii_new(tmp(ii)) = xii_old(tmp(ii));
 end
 
-% restrict b value below 1 and .3.
+% restrict b_P value between 1.5 and .5.
 if (xii_new(1)>1.5 | xii_new(1)<0.5);
     xii_new(1) = xii_old(1);
 end
@@ -46,10 +53,11 @@ if (xii_new(4)>1.25*xii_old(4) | ...
     xii_new(4)<0.75*xii_old(4));
     xii_new(4) = xii_old(4);
 end
-
+% restrict b_N value between 1.5 and .5.
 if (xii_new(6)>1.5 | xii_new(6)<0.5);
     xii_new(6) = xii_old(6);
 end
+
 for i1 = 1:length(xii_new)
     fprintf('%3.3e,',xii_new(i1));
 end
