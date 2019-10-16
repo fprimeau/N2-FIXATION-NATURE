@@ -39,7 +39,7 @@ doit.m
 	     +-->[buildPFD.m uptake.m denit_don.m fixit.m]
 
 
-unitlity scripts:
+utility scripts:
 
 nsnew.m   C.T. Kelly's Newton Armijo solver
 
